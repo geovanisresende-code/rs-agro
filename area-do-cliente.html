@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" type="image/png" href="assets/favicon.png"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RS Agro – Área do Cliente</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+/* ===================== BASE ===================== */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+html,body{min-height:100%;background:#f4f6f4;}
+
+/* ===================== LOGIN ===================== */
+#auth{
+  min-height:100vh;
+  background:linear-gradient(135deg,#1B3A2A 0%,#2d6040 55%,#63A54B 100%);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.auth-card{
+  background:#fff;border-radius:18px;width:100%;max-width:440px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.22);overflow:hidden;
+}
+.auth-top{background:#ffffff;padding:24px 0 20px;text-align:center;border-bottom:2px solid #f0f0f0;}
+.auth-top img{height:64px;}
+.auth-tabs{display:flex;border-bottom:2px solid #f0f0f0;}
+.auth-tab{
+  flex:1;padding:13px;text-align:center;cursor:pointer;font-size:14px;
+  font-weight:700;color:#aaa;background:none;border:none;
+  border-bottom:3px solid transparent;transition:all .2s;
+}
+.auth-tab.on{color:#1B3A2A;border-bottom-color:#63A54B;}
+.auth-body{padding:26px 30px 30px;}
+.auth-form{display:none;}
+.auth-form.on{display:block;}
+.auth-form h2{font-size:19px;font-weight:700;color:#1B3A2A;margin-bottom:4px;}
+.auth-form .sub{color:#999;font-size:13px;margin-bottom:20px;}
+.fld{margin-bottom:14px;}
+.fld label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:5px;}
+.fld input,.fld select{
+  width:100%;padding:11px 13px;border:2px solid #e8e8e8;border-radius:9px;
+  font-size:14px;transition:border .2s;color:#333;background:#fff;
+}
+.fld input:focus,.fld select:focus{outline:none;border-color:#63A54B;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.auth-btn{
+  width:100%;padding:13px;background:#63A54B;color:#fff;font-size:15px;
+  font-weight:700;border:none;border-radius:9px;cursor:pointer;transition:all .2s;margin-top:4px;
+}
+.auth-btn:hover{background:#1B3A2A;}
+.msg-err{color:#c0392b;font-size:12px;margin-top:9px;display:none;padding:8px 12px;background:#fef0ee;border-radius:6px;}
+.msg-ok{color:#15803d;font-size:12px;margin-top:9px;display:none;padding:8px 12px;background:#f0fdf4;border-radius:6px;}
+.hint{font-size:11px;color:#ccc;margin-top:12px;text-align:center;}
+
+/* ===================== APP ===================== */
+#app{display:none;min-height:100vh;background:#f4f6f4;}
+
+/* ---- SIDEBAR ---- */
+.sidebar{
+  position:fixed;top:0;left:0;width:260px;height:100%;
+  background:#ffffff;
+  box-shadow:2px 0 12px rgba(0,0,0,0.08);
+  display:flex;flex-direction:column;z-index:200;
+  transition:transform .3s;overflow-y:auto;
+}
+
+/* Logo */
+.sb-logo{padding:20px 18px 14px;border-bottom:1px solid #f0f0f0;}
+.sb-logo img{height:52px;display:block;}
+
+/* User card */
+.sb-user{
+  margin:14px 12px;padding:12px 14px;
+  background:#f8f9f8;border-radius:12px;
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  transition:background .18s;
+}
+.sb-user:hover{background:#f0f4f0;}
+.sb-av{
+  width:40px;height:40px;border-radius:50%;background:#1B3A2A;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  color:#fff;font-size:13px;font-weight:700;
+}
+.sb-av i{font-size:18px;}
+.sb-info{flex:1;}
+.sb-name{font-size:13px;font-weight:700;color:#1B3A2A;}
+.sb-role{font-size:11px;color:#888;margin-top:1px;}
+.sb-chev{color:#aaa;font-size:13px;}
+
+/* Nav */
+.sb-nav{flex:1;padding:6px 0;}
+.nv{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 16px;margin:2px 10px;border-radius:9px;
+  color:#666;cursor:pointer;font-size:13.5px;font-weight:600;
+  transition:all .18s;
+}
+.nv i{font-size:18px;width:22px;text-align:center;flex-shrink:0;}
+.nv:hover{background:#f0f7ec;color:#1B3A2A;}
+.nv.on{background:rgba(99,165,75,0.14);color:#1B3A2A;font-weight:700;}
+.nv.on i{color:#63A54B;}
+
+/* WhatsApp block */
+.sb-wa{
+  margin:10px 12px;padding:14px;
+  background:#f0f7ec;border-radius:12px;border:1px solid #d4e8c8;
+}
+.sb-wa-top{display:flex;align-items:center;gap:10px;}
+.sb-wa-ico{
+  width:40px;height:40px;border-radius:50%;background:#25D366;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sb-wa-ico i{font-size:20px;color:#fff;}
+.sb-wa-txt .t{font-size:12px;font-weight:700;color:#1B3A2A;}
+.sb-wa-txt .s{font-size:11px;color:#888;}
+.sb-wa-btn{
+  display:block;width:100%;margin-top:10px;padding:9px;
+  background:#1B3A2A;color:#fff;font-size:13px;font-weight:700;
+  text-align:center;border:none;border-radius:8px;cursor:pointer;transition:background .18s;
+}
+.sb-wa-btn:hover{background:#2d6040;}
+
+/* Sair */
+.sb-out{
+  padding:13px 16px;margin:2px 10px 10px;border-radius:9px;
+  display:flex;align-items:center;gap:11px;
+  color:#aaa;cursor:pointer;font-size:13px;font-weight:600;transition:all .18s;
+}
+.sb-out:hover{background:#fef0ee;color:#c0392b;}
+.sb-out i{font-size:18px;}
+
+/* ---- MAIN ---- */
+.main{
+  margin-left:260px;
+  width:calc(100% - 260px);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+
+/* TOP BAR */
+.topbar{
+  display:flex;align-items:center;justify-content:flex-end;
+  padding:14px 28px;gap:16px;
+  background:transparent;position:relative;z-index:10;
+  flex-shrink:0;
+}
+.notif-btn{
+  position:relative;background:none;border:none;
+  font-size:22px;cursor:pointer;color:#333;
+}
+.nb{
+  position:absolute;top:-4px;right:-5px;background:#e74c3c;color:#fff;
+  font-size:9px;width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+}
+.tb-user{display:flex;align-items:center;gap:9px;}
+.tb-name{font-size:14px;font-weight:600;color:#333;}
+.tb-av{
+  width:36px;height:36px;border-radius:50%;background:#1B3A2A;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;
+}
+
+/* CONTENT */
+.content{padding:0 28px 48px;flex:1;}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#1B3A2A 0%,#2d6040 55%,#4a8a38 80%,#63A54B 100%);
+  border-radius:16px;margin-bottom:24px;padding:32px 36px;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+}
+.hero::after{
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.hero-text{position:relative;z-index:1;}
+.hero-text h1{font-size:26px;font-weight:800;color:#ffffff;}
+.hero-text p{font-size:14px;color:rgba(255,255,255,0.75);margin-top:4px;}
+
+/* QUICK CARDS */
+.quick{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:12px;margin-bottom:24px;
+}
+@media(max-width:1300px){.quick{grid-template-columns:repeat(4,1fr);}}
+.qc{
+  background:#fff;border-radius:14px;padding:20px 12px 16px;
+  text-align:center;cursor:pointer;border:2px solid transparent;
+  box-shadow:0 2px 10px rgba(0,0,0,0.06);transition:all .2s;
+}
+.qc:hover{border-color:#63A54B;transform:translateY(-3px);box-shadow:0 8px 20px rgba(99,165,75,0.15);}
+.qc-ico{
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(99,165,75,0.12);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;
+}
+.qc-ico i{font-size:26px;color:#63A54B;}
+.qc-lbl{font-size:12px;font-weight:700;color:#1B3A2A;line-height:1.4;}
+.qc-sub{font-size:10px;color:#999;margin-top:4px;line-height:1.3;}
+.qc-arr{font-size:16px;color:#63A54B;margin-top:8px;display:block;}
+
+/* 3-COL WIDGETS */
+.w3{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:18px;margin-bottom:24px;}
+@media(max-width:1100px){.w3{grid-template-columns:1fr 1fr;}}
+@media(max-width:700px){.w3{grid-template-columns:1fr;}}
+
+.wcard{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06);overflow:hidden;}
+.wcard-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid #f2f2f2;
+}
+.wcard-hd h3{font-size:14px;font-weight:700;color:#1B3A2A;}
+.wcard-hd a{font-size:12px;color:#63A54B;font-weight:600;text-decoration:none;}
+.wcard-hd a:hover{text-decoration:underline;}
+.wcard-bd{padding:14px 18px;}
+
+/* ALERT ITEMS */
+.al-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f7f7f7;}
+.al-item:last-child{border-bottom:none;}
+.al-bell{font-size:20px;margin-top:2px;}
+.al-info{flex:1;}
+.al-title{font-size:12.5px;font-weight:700;color:#222;}
+.al-desc{font-size:11px;color:#888;margin-top:2px;line-height:1.4;}
+.badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:12px;white-space:nowrap;align-self:flex-start;margin-top:2px;}
+.badge-y{background:#fff3cd;color:#856404;}
+.badge-r{background:#f8d7da;color:#842029;}
+.badge-g{background:#d1e7dd;color:#0f5132;}
+.al-more{
+  display:block;width:100%;margin-top:12px;padding:9px;
+  border:1.5px solid #63A54B;color:#63A54B;background:none;
+  font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;
+  transition:all .18s;text-align:center;
+}
+.al-more:hover{background:#63A54B;color:#fff;}
+
+/* MINI CALENDAR */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-nav span{font-size:13px;font-weight:700;color:#1B3A2A;}
+.cal-nav button{background:none;border:none;font-size:18px;color:#1B3A2A;cursor:pointer;padding:3px 7px;border-radius:5px;}
+.cal-nav button:hover{background:#f0f0f0;}
+.cal-tbl{width:100%;border-collapse:collapse;}
+.cal-tbl th{font-size:10px;color:#aaa;font-weight:600;padding:3px 0;text-align:center;}
+.cal-tbl td{text-align:center;padding:4px 2px;font-size:12px;color:#444;cursor:pointer;border-radius:5px;position:relative;}
+.cal-tbl td:hover{background:#f5f5f5;}
+.cal-tbl td.today{background:#63A54B;color:#fff;font-weight:700;border-radius:50%;width:26px;height:26px;}
+.cal-tbl td.other{color:#ccc;}
+.dot{position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;}
+.cal-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:#666;}
+.cl{display:flex;align-items:center;gap:5px;}
+.cld{width:9px;height:9px;border-radius:50%;}
+
+/* REPORTS WIDGET */
+.rp{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f7f7f7;}
+.rp:last-child{border-bottom:none;}
+.rp-nm{font-size:13px;font-weight:700;color:#222;}
+.rp-cr{font-size:11px;color:#999;margin-top:1px;}
+.rp-vl{text-align:right;}
+.rp-vl .v{font-size:18px;font-weight:800;color:#1B3A2A;}
+.rp-vl .u{font-size:11px;color:#999;}
+.rp-vl .d{font-size:11px;display:block;margin-top:2px;}
+.du{color:#16a34a;}.dd{color:#dc2626;}
+.see-all{
+  display:block;width:100%;margin-top:12px;padding:9px;
+  border:1.5px solid #63A54B;color:#63A54B;background:none;
+  font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;
+  transition:all .18s;text-align:center;
+}
+.see-all:hover{background:#63A54B;color:#fff;}
+
+/* TABLE */
+.tbl-card{
+  background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  overflow:hidden;margin-bottom:24px;
+}
+.tbl-card table{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl-card th{background:#fafafa;padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.4px;}
+.tbl-card td{padding:12px 16px;border-bottom:1px solid #f5f5f5;color:#444;}
+.tbl-card tr:last-child td{border-bottom:none;}
+.tbl-card tr:hover td{background:#fafff8;}
+.pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;}
+.pill-a{background:#d1e7dd;color:#0f5132;}
+.pill-p{background:#fff3cd;color:#856404;}
+
+/* SECTION PAGES */
+.pg{display:none;}
+.pg.on{display:block;}
+.pg-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.pg-top h2{font-size:20px;font-weight:800;color:#1B3A2A;}
+.pg-top p{font-size:13px;color:#999;margin-top:3px;}
+
+/* ITEM CARDS */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-bottom:24px;}
+.cc{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06);overflow:hidden;transition:all .2s;}
+.cc:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.09);}
+.cc-bar{height:6px;background:linear-gradient(90deg,#63A54B,#1B3A2A);}
+.cc-body{padding:16px 18px;}
+.cc-title{font-size:15px;font-weight:700;color:#1B3A2A;}
+.cc-meta{font-size:12.5px;color:#777;margin-top:7px;line-height:1.6;}
+.cc-foot{padding:10px 18px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f0f0f0;}
+.tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(99,165,75,0.12);color:#63A54B;}
+.cc-foot a{font-size:12px;color:#63A54B;font-weight:700;text-decoration:none;}
+.del-btn{background:none;border:none;color:#e74c3c;font-size:12px;cursor:pointer;font-weight:700;}
+.del-btn:hover{text-decoration:underline;}
+.add-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 22px;background:#63A54B;color:#fff;
+  font-size:13px;font-weight:700;border:none;border-radius:9px;
+  cursor:pointer;transition:all .18s;
+}
+.add-btn:hover{background:#1B3A2A;}
+
+/* RECS */
+.rec{background:#fff;border-radius:14px;padding:18px 22px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-left:5px solid #63A54B;}
+.rec.rw{border-left-color:#f59e0b;}
+.rec.rd{border-left-color:#ef4444;}
+.rec h4{font-size:14px;font-weight:700;color:#1B3A2A;margin-bottom:8px;}
+.rec p{font-size:13px;color:#555;line-height:1.5;}
+.rec-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;}
+.rec-meta span{font-size:12px;color:#888;}
+.rec-meta strong{color:#1B3A2A;}
+
+/* FULL CALENDAR */
+.cal-full{background:#fff;border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+.cft{width:100%;border-collapse:collapse;}
+.cft th{padding:10px 4px;text-align:center;font-size:12px;color:#aaa;font-weight:600;border-bottom:2px solid #f0f0f0;}
+.cft td{height:80px;vertical-align:top;padding:6px 8px;border:1px solid #f2f2f2;font-size:12px;cursor:pointer;}
+.cft td:hover{background:#fafff8;}
+.cft td.ct{background:rgba(99,165,75,0.06);}
+.cft td.ct .dn{background:#63A54B;color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;}
+.cft td.co{background:#fafafa;}
+.cft td.co .dn{color:#ccc;}
+.ev{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ev-p{background:#d1fae5;color:#065f46;}
+.ev-a{background:#dbeafe;color:#1e40af;}
+.ev-ap{background:#fef3c7;color:#92400e;}
+.ev-c{background:#fee2e2;color:#991b1b;}
+
+/* ALERTAS PAGE */
+.al-pg{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);display:flex;align-items:flex-start;gap:12px;}
+.al-pg-ico{font-size:26px;margin-top:2px;}
+.al-pg-body{flex:1;}
+.al-pg-body h4{font-size:13px;font-weight:700;color:#222;}
+.al-pg-body p{font-size:12px;color:#777;margin-top:3px;line-height:1.4;}
+.al-pg-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+
+/* RELAT */
+.rl{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:16px;}
+.rl-hd{padding:14px 18px;background:#1B3A2A;color:#fff;display:flex;justify-content:space-between;align-items:center;}
+.rl-hd.neg{background:#c0392b;}
+.rl-hd h4{font-size:14px;font-weight:700;}
+.rl-hd span{font-size:12px;opacity:.85;}
+.rl-bd{padding:20px;}
+.rl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.rl-st{text-align:center;}
+.rl-sv{font-size:22px;font-weight:800;color:#1B3A2A;}
+.rl-sl{font-size:10px;color:#aaa;margin-top:3px;}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
+.mo.on{display:flex;}
+.mb{background:#fff;border-radius:16px;padding:28px 30px;width:100%;max-width:480px;position:relative;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.mb h3{font-size:17px;font-weight:700;color:#1B3A2A;margin-bottom:18px;}
+.mo-x{position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;}
+.mo-x:hover{color:#333;}
+.mfooter{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+.btn-c{padding:9px 20px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-s{padding:9px 22px;background:#63A54B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-s:hover{background:#1B3A2A;}
+
+/* MOBILE */
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:190;}
+.ham{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:#333;}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .sb-ov.open{display:block;}
+  .main{margin-left:0;}
+  .ham{display:block;}
+  .w3{grid-template-columns:1fr;}
+}
+
+/* EMPTY + TOAST */
+.empty{text-align:center;padding:48px 20px;color:#ccc;}
+.empty i{font-size:48px;display:block;margin-bottom:12px;}
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:#1B3A2A;color:#fff;padding:11px 24px;border-radius:8px;
+  font-size:13px;font-weight:600;z-index:99999;transition:transform .3s;
+  pointer-events:none;
+}
+.toast.on{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ==================== AUTH ==================== -->
+<div id="auth">
+  <div class="auth-card">
+    <div class="auth-top"><img src="assets/rs.png" alt="RS Agro"></div>
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="tab('login')">Entrar</button>
+      <button class="auth-tab" onclick="tab('cadastro')">Criar conta</button>
+    </div>
+    <div class="auth-body">
+      <!-- LOGIN -->
+      <div class="auth-form on" id="fl">
+        <h2>Bem-vindo de volta!</h2>
+        <p class="sub">Acesse sua área exclusiva do produtor</p>
+        <div class="fld"><label>Usuário ou e-mail</label><input id="lu" type="text" placeholder="Ex: joao.silva"></div>
+        <div class="fld"><label>Senha</label><input id="lp" type="password" placeholder="Sua senha" onkeydown="if(event.key==='Enter')login()"></div>
+        <button class="auth-btn" onclick="login()">Entrar na conta</button>
+        <p class="msg-err" id="le"></p>
+        <p class="hint">Demo: <strong>joao.silva</strong> / <strong>rsagro123</strong></p>
+      </div>
+      <!-- CADASTRO -->
+      <div class="auth-form" id="fc">
+        <h2>Criar sua conta</h2>
+        <p class="sub">Preencha os dados para acessar a área do produtor</p>
+        <div class="frow">
+          <div class="fld"><label>Nome completo</label><input id="cn" type="text" placeholder="João da Silva"></div>
+          <div class="fld"><label>CPF</label><input id="cc" type="text" placeholder="000.000.000-00"></div>
+        </div>
+        <div class="fld"><label>E-mail</label><input id="ce" type="email" placeholder="email@exemplo.com"></div>
+        <div class="frow">
+          <div class="fld"><label>Usuário</label><input id="cu" type="text" placeholder="joao.silva"></div>
+          <div class="fld"><label>WhatsApp</label><input id="ct" type="text" placeholder="(32) 99999-9999"></div>
+        </div>
+        <div class="frow">
+          <div class="fld"><label>Senha</label><input id="cp" type="password" placeholder="Mín. 6 caracteres"></div>
+          <div class="fld"><label>Confirmar senha</label><input id="cp2" type="password" placeholder="Repita"></div>
+        </div>
+        <div class="fld"><label>Tipo de produção</label>
+          <select id="ctp"><option value="">Selecione...</option>
+            <option>Soja</option><option>Milho</option><option>Algodão</option>
+            <option>Café</option><option>Cana-de-açúcar</option><option>Pastagem/Pecuária</option><option>Outro</option>
+          </select>
+        </div>
+        <button class="auth-btn" onclick="cadastro()">Criar conta gratuita</button>
+        <p class="msg-err" id="ce2"></p>
+        <p class="msg-ok" id="cok"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div class="sb-ov" id="sbov" onclick="closesb()"></div>
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="sb-logo"><img src="assets/rs.png" alt="RS Agro"></div>
+    <div class="sb-user">
+      <div class="sb-av"><i class="bi bi-person-fill"></i></div>
+      <div class="sb-info">
+        <div class="sb-name" id="sb-nome">João da Silva</div>
+        <div class="sb-role">Produtor Rural</div>
+      </div>
+      <i class="bi bi-chevron-down sb-chev"></i>
+    </div>
+    <nav class="sb-nav">
+      <div class="nv on" onclick="pg('dashboard',this)"><i class="bi bi-house-fill"></i>Dashboard</div>
+      <div class="nv" onclick="pg('fazendas',this)"><i class="bi bi-building"></i>Fazendas</div>
+      <div class="nv" onclick="pg('talhoes',this)"><i class="bi bi-grid"></i>Talhões</div>
+      <div class="nv" onclick="pg('analises',this)"><i class="bi bi-eyedropper"></i>Histórico de análises</div>
+      <div class="nv" onclick="pg('rec',this)"><i class="bi bi-clipboard2-check-fill"></i>Recomendação de correção</div>
+      <div class="nv" onclick="pg('cal',this)"><i class="bi bi-calendar3"></i>Calendário agrícola</div>
+      <div class="nv" onclick="pg('alertas',this)"><i class="bi bi-bell"></i>Alertas de adubação</div>
+      <div class="nv" onclick="pg('relat',this)"><i class="bi bi-bar-chart-line"></i>Relatórios de produtividade</div>
+    </nav>
+    <div class="sb-wa">
+      <div class="sb-wa-top">
+        <div class="sb-wa-ico"><i class="bi bi-whatsapp"></i></div>
+        <div class="sb-wa-txt"><div class="t">Fale com nosso agrônomo</div><div class="s">Atendimento via WhatsApp</div></div>
+      </div>
+      <button class="sb-wa-btn" onclick="window.open('https://wa.me/5532984019742','_blank')">Iniciar conversa</button>
+    </div>
+    <div class="sb-out" onclick="logout()"><i class="bi bi-box-arrow-left"></i>Sair</div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- topbar -->
+    <div class="topbar">
+      <button class="ham" onclick="opensb()"><i class="bi bi-list"></i></button>
+      <button class="notif-btn" onclick="pg('alertas',null)"><i class="bi bi-bell-fill"></i><span class="nb" id="nbc">3</span></button>
+      <div class="tb-user">
+        <span class="tb-name" id="tb-nome">João da Silva</span>
+        <div class="tb-av" id="tb-av">J</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ====== DASHBOARD ====== -->
+      <div id="pg-dashboard" class="pg on">
+        <div class="hero">
+          <div class="hero-text">
+            <h1 id="ola">Olá, João!</h1>
+            <p>Bem-vindo à sua área exclusiva do produtor.</p>
+          </div>
+        </div>
+
+        <!-- Quick cards -->
+        <div class="quick">
+          <div class="qc" onclick="pg('fazendas',null)">
+            <div class="qc-ico"><i class="bi bi-building"></i></div>
+            <div class="qc-lbl">Fazendas</div>
+            <div class="qc-sub">Gerencie suas fazendas</div>
+            <span class="qc-arr">→</span>
+          </div>
+          <div class="qc" onclick="pg('talhoes',null)">
+            <div class="qc-ico"><i class="bi bi-grid"></i></div>
+            <div class="qc-lbl">Talhões</div>
+            <div class="qc-sub">Acompanhe seus talhões</div>
+            <span class="qc-arr">→</span>
+          </div>
+          <div class="qc" onclick="pg('analises',null)">
+            <div class="qc-ico"><i class="bi bi-eyedropper"></i></div>
+            <div class="qc-lbl">Histórico de análises</div>
+            <div class="qc-sub">Consulte suas análises de solo</div>
+            <span class="qc-arr">→</span>
+          </div>
+          <div class="qc" onclick="pg('rec',null)">
+            <div class="qc-ico"><i class="bi bi-clipboard2-check-fill"></i></div>
+            <div class="qc-lbl">Recomendação de correção</div>
+            <div class="qc-sub">Veja recomendações para suas áreas</div>
+            <span class="qc-arr">→</span>
+          </div>
+          <div class="qc" onclick="pg('cal',null)">
+            <div class="qc-ico"><i class="bi bi-calendar3"></i></div>
+            <div class="qc-lbl">Calendário agrícola</div>
+            <div class="qc-sub">Planeje suas atividades</div>
+            <span class="qc-arr">→</span>
+          </div>
+          <div class="qc" onclick="pg('alertas',null)">
+            <div class="qc-ico"><i class="bi bi-bell"></i></div>
+            <div class="qc-lbl">Alertas de adubação</div>
+            <div class="qc-sub">Receba alertas e recomendações</div>
+            <span class="qc-arr">→</span>
+          </div>
+          <div class="qc" onclick="pg('relat',null)">
+            <div class="qc-ico"><i class="bi bi-bar-chart-line"></i></div>
+            <div class="qc-lbl">Relatórios de produtividade</div>
+            <div class="qc-sub">Acompanhe seus resultados</div>
+            <span class="qc-arr">→</span>
+          </div>
+        </div>
+
+        <!-- 3 widgets -->
+        <div class="w3">
+          <!-- ALERTAS widget -->
+          <div class="wcard">
+            <div class="wcard-hd"><h3>Alertas de adubação</h3><a href="#" onclick="pg('alertas',null);return false">Ver todos</a></div>
+            <div class="wcard-bd" id="dash-al"></div>
+          </div>
+          <!-- CALENDÁRIO widget -->
+          <div class="wcard">
+            <div class="wcard-hd"><h3>Calendário agrícola</h3><a href="#" onclick="pg('cal',null);return false">Ver calendário completo</a></div>
+            <div class="wcard-bd">
+              <div class="cal-nav">
+                <button onclick="mp(-1)"><i class="bi bi-chevron-left"></i></button>
+                <span id="mlbl">Maio de 2024</span>
+                <button onclick="mp(1)"><i class="bi bi-chevron-right"></i></button>
+              </div>
+              <table class="cal-tbl" id="mt"></table>
+              <div class="cal-legend">
+                <div class="cl"><div class="cld" style="background:#16a34a"></div>Plantio</div>
+                <div class="cl"><div class="cld" style="background:#2563eb"></div>Adubação</div>
+                <div class="cl"><div class="cld" style="background:#d97706"></div>Aplicação</div>
+                <div class="cl"><div class="cld" style="background:#dc2626"></div>Colheita</div>
+              </div>
+            </div>
+          </div>
+          <!-- RELATÓRIOS widget -->
+          <div class="wcard">
+            <div class="wcard-hd"><h3>Relatórios de produtividade</h3><a href="#" onclick="pg('relat',null);return false">Ver todos</a></div>
+            <div class="wcard-bd">
+              <div class="rp"><div><div class="rp-nm">Fazenda São José</div><div class="rp-cr">Soja 23/24</div></div><div class="rp-vl"><span class="v">62,5</span><span class="u"> sc/ha</span><span class="d du">↑ +8,2% vs safra anterior</span></div></div>
+              <div class="rp"><div><div class="rp-nm">Fazenda Santa Clara</div><div class="rp-cr">Milho 23/24</div></div><div class="rp-vl"><span class="v">128,3</span><span class="u"> sc/ha</span><span class="d du">↑ +12,5% vs safra anterior</span></div></div>
+              <div class="rp"><div><div class="rp-nm">Fazenda Boa Vista</div><div class="rp-cr">Algodão 23/24</div></div><div class="rp-vl"><span class="v">285,7</span><span class="u"> @/ha</span><span class="d dd">↓ -3,1% vs safra anterior</span></div></div>
+              <button class="see-all" onclick="pg('relat',null)">Ver todos os relatórios</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABELA análises -->
+        <div class="tbl-card">
+          <div class="wcard-hd" style="padding:14px 18px">
+            <h3>Últimas análises de solo</h3>
+            <a href="#" onclick="pg('analises',null);return false">Ver todas análises</a>
+          </div>
+          <table>
+            <thead><tr><th>Fazenda</th><th>Talhão</th><th>Data da análise</th><th>pH</th><th>P (mg/dm³)</th><th>K (mg/dm³)</th><th>Matéria Orgânica</th><th>Status</th></tr></thead>
+            <tbody id="dash-tbl"></tbody>
+          </table>
+        </div>
+      </div><!-- /dashboard -->
+
+      <!-- ====== FAZENDAS ====== -->
+      <div id="pg-fazendas" class="pg">
+        <div class="pg-top"><div><h2>Fazendas</h2><p>Gerencie suas propriedades rurais</p></div><button class="add-btn" onclick="openmo('mo-faz')"><i class="bi bi-plus-lg"></i>Adicionar Fazenda</button></div>
+        <div class="cg" id="faz-grid"></div>
+      </div>
+
+      <!-- ====== TALHÕES ====== -->
+      <div id="pg-talhoes" class="pg">
+        <div class="pg-top"><div><h2>Talhões</h2><p>Acompanhe os talhões de suas fazendas</p></div><button class="add-btn" onclick="openmo('mo-tal')"><i class="bi bi-plus-lg"></i>Adicionar Talhão</button></div>
+        <div class="cg" id="tal-grid"></div>
+      </div>
+
+      <!-- ====== ANÁLISES ====== -->
+      <div id="pg-analises" class="pg">
+        <div class="pg-top"><div><h2>Histórico de Análises de Solo</h2><p>Consulte todos os laudos</p></div><button class="add-btn" onclick="openmo('mo-an')"><i class="bi bi-plus-lg"></i>Nova Análise</button></div>
+        <div class="tbl-card">
+          <table>
+            <thead><tr><th>Fazenda</th><th>Talhão</th><th>Data</th><th>pH</th><th>P</th><th>K</th><th>Ca</th><th>Mg</th><th>MO%</th><th>V%</th><th>Status</th><th></th></tr></thead>
+            <tbody id="an-tbl"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ====== RECOMENDAÇÕES ====== -->
+      <div id="pg-rec" class="pg">
+        <div class="pg-top"><div><h2><i class="bi bi-clipboard2-check-fill" style="color:#63A54B;margin-right:8px"></i>Recomendação de Correção</h2><p>Orientações técnicas por talhão</p></div><button class="add-btn" onclick="openmo('mo-rec')"><i class="bi bi-plus-lg"></i>Nova Recomendação</button></div>
+        <div id="rec-list"></div>
+      </div>
+
+      <!-- ====== CALENDÁRIO ====== -->
+      <div id="pg-cal" class="pg">
+        <div class="pg-top"><div><h2>Calendário Agrícola</h2><p>Planeje e acompanhe as atividades da safra</p></div><button class="add-btn" onclick="openmo('mo-ev')"><i class="bi bi-plus-lg"></i>Adicionar Evento</button></div>
+        <div class="cal-full">
+          <div class="cal-nav" style="margin-bottom:14px">
+            <button onclick="fp(-1)"><i class="bi bi-chevron-left"></i></button>
+            <span id="flbl" style="font-size:16px;font-weight:700;color:#1B3A2A">Maio de 2024</span>
+            <button onclick="fp(1)"><i class="bi bi-chevron-right"></i></button>
+          </div>
+          <table class="cft" id="ft"></table>
+          <div class="cal-legend" style="margin-top:14px">
+            <div class="cl"><div class="cld" style="background:#16a34a"></div>Plantio</div>
+            <div class="cl"><div class="cld" style="background:#2563eb"></div>Adubação</div>
+            <div class="cl"><div class="cld" style="background:#d97706"></div>Aplicação Defensivos</div>
+            <div class="cl"><div class="cld" style="background:#dc2626"></div>Colheita</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== ALERTAS ====== -->
+      <div id="pg-alertas" class="pg">
+        <div class="pg-top"><div><h2>Alertas de Adubação</h2><p>Notificações e recomendações técnicas urgentes</p></div><button class="add-btn" onclick="openmo('mo-al')"><i class="bi bi-plus-lg"></i>Novo Alerta</button></div>
+        <div id="al-list"></div>
+      </div>
+
+      <!-- ====== RELATÓRIOS ====== -->
+      <div id="pg-relat" class="pg">
+        <div class="pg-top"><div><h2>Relatórios de Produtividade</h2><p>Acompanhe o desempenho das suas lavouras</p></div></div>
+        <div id="rl-list"></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ==================== MODAIS ==================== -->
+<div class="mo" id="mo-faz">
+  <div class="mb"><h3>Adicionar Fazenda</h3><button class="mo-x" onclick="closemo('mo-faz')">×</button>
+    <div class="fld"><label>Nome</label><input id="fn" type="text" placeholder="Fazenda Esperança"></div>
+    <div class="frow">
+      <div class="fld"><label>Município / UF</label><input id="fl2" type="text" placeholder="Barbacena – MG"></div>
+      <div class="fld"><label>Área (ha)</label><input id="fa" type="number" placeholder="250"></div>
+    </div>
+    <div class="fld"><label>Culturas</label><input id="fcu" type="text" placeholder="Soja, Milho"></div>
+    <div class="mfooter"><button class="btn-c" onclick="closemo('mo-faz')">Cancelar</button><button class="btn-s" onclick="svFaz()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-tal">
+  <div class="mb"><h3>Adicionar Talhão</h3><button class="mo-x" onclick="closemo('mo-tal')">×</button>
+    <div class="fld"><label>Fazenda</label><select id="tf"><option value="">Selecione...</option></select></div>
+    <div class="frow">
+      <div class="fld"><label>Nome do Talhão</label><input id="tn" type="text" placeholder="Talhão 04"></div>
+      <div class="fld"><label>Área (ha)</label><input id="ta" type="number" placeholder="80"></div>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>Cultura</label><input id="tc" type="text" placeholder="Soja"></div>
+      <div class="fld"><label>Data de plantio</label><input id="td" type="date"></div>
+    </div>
+    <div class="mfooter"><button class="btn-c" onclick="closemo('mo-tal')">Cancelar</button><button class="btn-s" onclick="svTal()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-an">
+  <div class="mb"><h3>Nova Análise de Solo</h3><button class="mo-x" onclick="closemo('mo-an')">×</button>
+    <div class="frow">
+      <div class="fld"><label>Fazenda</label><select id="anf"><option value="">Selecione...</option></select></div>
+      <div class="fld"><label>Talhão</label><input id="ant" type="text" placeholder="Talhão 01"></div>
+    </div>
+    <div class="fld"><label>Data</label><input id="and" type="date"></div>
+    <div class="frow">
+      <div class="fld"><label>pH</label><input id="anph" type="number" step="0.1" placeholder="5.8"></div>
+      <div class="fld"><label>P (mg/dm³)</label><input id="anp" type="number" step="0.1" placeholder="12.5"></div>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>K (mg/dm³)</label><input id="ank" type="number" step="0.01" placeholder="0.18"></div>
+      <div class="fld"><label>MO (%)</label><input id="anmo" type="number" step="0.1" placeholder="2.4"></div>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>Ca</label><input id="anca" type="number" step="0.1" placeholder="3.2"></div>
+      <div class="fld"><label>Mg</label><input id="anmg" type="number" step="0.1" placeholder="0.9"></div>
+    </div>
+    <div class="mfooter"><button class="btn-c" onclick="closemo('mo-an')">Cancelar</button><button class="btn-s" onclick="svAn()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-rec">
+  <div class="mb"><h3>Nova Recomendação</h3><button class="mo-x" onclick="closemo('mo-rec')">×</button>
+    <div class="frow">
+      <div class="fld"><label>Fazenda</label><select id="rcf"><option value="">Selecione...</option></select></div>
+      <div class="fld"><label>Talhão</label><input id="rct" type="text" placeholder="Talhão 01"></div>
+    </div>
+    <div class="fld"><label>Recomendação</label><textarea id="rctx" rows="3" style="width:100%;padding:10px 13px;border:2px solid #e8e8e8;border-radius:9px;font-size:13px;resize:vertical;" placeholder="Descreva o produto, dose e forma de aplicação..."></textarea></div>
+    <div class="frow">
+      <div class="fld"><label>Produto</label><input id="rcp" type="text" placeholder="Calcário Dolomítico"></div>
+      <div class="fld"><label>Dose</label><input id="rcd" type="text" placeholder="2 t/ha"></div>
+    </div>
+    <div class="fld"><label>Prioridade</label>
+      <select id="rcpr"><option value="Alta">🔴 Alta</option><option value="Média">🟡 Média</option><option value="Normal" selected>🟢 Normal</option></select>
+    </div>
+    <div class="mfooter"><button class="btn-c" onclick="closemo('mo-rec')">Cancelar</button><button class="btn-s" onclick="svRec()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-ev">
+  <div class="mb"><h3>Adicionar Evento Agrícola</h3><button class="mo-x" onclick="closemo('mo-ev')">×</button>
+    <div class="fld"><label>Tipo</label>
+      <select id="evt"><option value="plantio">🌱 Plantio</option><option value="adubacao">💧 Adubação</option><option value="aplicacao">🌿 Aplicação</option><option value="colheita">🌾 Colheita</option></select>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>Local (Fazenda / Talhão)</label><input id="evl" type="text" placeholder="São José – T01"></div>
+      <div class="fld"><label>Data</label><input id="evd" type="date"></div>
+    </div>
+    <div class="fld"><label>Descrição</label><input id="evdesc" type="text" placeholder="Detalhes..."></div>
+    <div class="mfooter"><button class="btn-c" onclick="closemo('mo-ev')">Cancelar</button><button class="btn-s" onclick="svEv()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="mo" id="mo-al">
+  <div class="mb"><h3>Novo Alerta de Adubação</h3><button class="mo-x" onclick="closemo('mo-al')">×</button>
+    <div class="frow">
+      <div class="fld"><label>Fazenda</label><select id="alf"><option value="">Selecione...</option></select></div>
+      <div class="fld"><label>Talhão</label><input id="alt" type="text" placeholder="Talhão 01"></div>
+    </div>
+    <div class="fld"><label>Descrição</label><textarea id="aldc" rows="2" style="width:100%;padding:10px 13px;border:2px solid #e8e8e8;border-radius:9px;font-size:13px;"></textarea></div>
+    <div class="frow">
+      <div class="fld"><label>Urgência (dias)</label><input id="alda" type="number" placeholder="5" min="1"></div>
+      <div class="fld"><label>Nível</label>
+        <select id="aln"><option value="r">🔴 Alta</option><option value="y">🟡 Média</option><option value="g">🟢 Baixa</option></select>
+      </div>
+    </div>
+    <div class="mfooter"><button class="btn-c" onclick="closemo('mo-al')">Cancelar</button><button class="btn-s" onclick="svAl()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============== STORAGE ===============
+const UK='rsagro_users';
+let CU=null;
+const ls=k=>{ try{return JSON.parse(localStorage.getItem(CU+k)||'null');}catch{return null;} };
+const ss=(k,v)=>localStorage.setItem(CU+k,JSON.stringify(v));
+const sd=(k,v)=>{ if(ls(k)===null) ss(k,v); };
+
+function seed(){
+  sd('fazendas',[
+    {id:1,nome:'Fazenda São José',loc:'Barbacena – MG',area:'320',cult:'Soja, Milho, Pastagem'},
+    {id:2,nome:'Fazenda Santa Clara',loc:'Conselheiro Lafaiete – MG',area:'210',cult:'Milho, Sorgo'},
+    {id:3,nome:'Fazenda Boa Vista',loc:'Carandaí – MG',area:'480',cult:'Algodão, Soja, Pastagem'}
+  ]);
+  sd('talhoes',[
+    {id:1,fazenda:'Fazenda São José',nome:'Talhão 01',area:'85',cult:'Soja',data:'2023-10-15'},
+    {id:2,fazenda:'Fazenda São José',nome:'Talhão 02',area:'120',cult:'Milho',data:'2023-11-20'},
+    {id:3,fazenda:'Fazenda São José',nome:'Talhão 03',area:'115',cult:'Pastagem',data:'2023-09-05'},
+    {id:4,fazenda:'Fazenda Santa Clara',nome:'Talhão 01',area:'100',cult:'Milho',data:'2023-11-12'},
+    {id:5,fazenda:'Fazenda Boa Vista',nome:'Talhão 02',area:'200',cult:'Algodão',data:'2023-10-25'}
+  ]);
+  sd('analises',[
+    {id:1,fazenda:'Fazenda São José',talhao:'Talhão 03',data:'2024-05-10',ph:'5,8',p:'12,5',k:'0,18',ca:'3,2',mg:'0,9',mo:'2,4',v:'45',status:'Analisada'},
+    {id:2,fazenda:'Fazenda Santa Clara',talhao:'Talhão 01',data:'2024-05-08',ph:'5,5',p:'8,2',k:'0,15',ca:'2,8',mg:'0,7',mo:'2,1',v:'40',status:'Analisada'},
+    {id:3,fazenda:'Fazenda Boa Vista',talhao:'Talhão 02',data:'2024-05-05',ph:'6,2',p:'15,3',k:'0,22',ca:'3,8',mg:'1,1',mo:'2,8',v:'55',status:'Analisada'},
+    {id:4,fazenda:'Fazenda São José',talhao:'Talhão 01',data:'2024-05-02',ph:'6,0',p:'10,8',k:'0,20',ca:'3,5',mg:'1,0',mo:'2,6',v:'50',status:'Pendente'}
+  ]);
+  sd('recs',[
+    {id:1,fazenda:'Fazenda São José',talhao:'Talhão 03',txt:'pH abaixo do ideal (5,8). Recomenda-se aplicação de <strong>2 t/ha de calcário dolomítico</strong> para elevar saturação de bases para 65%.',prod:'Calcário Dolomítico',dose:'2 t/ha',prior:'Alta',data:'2024-05-10'},
+    {id:2,fazenda:'Fazenda Santa Clara',talhao:'Talhão 01',txt:'Teor de potássio abaixo do nível crítico. Recomenda-se aplicação de <strong>80 kg/ha de KCl</strong> na adubação de plantio.',prod:'KCl 60%',dose:'80 kg/ha',prior:'Média',data:'2024-05-08'},
+    {id:3,fazenda:'Fazenda Boa Vista',talhao:'Talhão 02',txt:'Solo com boa fertilidade. Manter adubação de manutenção com <strong>300 kg/ha de NPK 05-25-25</strong> no plantio.',prod:'NPK 05-25-25',dose:'300 kg/ha',prior:'Normal',data:'2024-05-05'}
+  ]);
+  sd('alertas',[
+    {id:1,fazenda:'Fazenda São José',talhao:'Talhão 03',desc:'Adubação de cobertura recomendada para os próximos 7 dias. Aplicar 80 kg/ha de ureia na fase V4 da soja.',dias:'3',nivel:'y'},
+    {id:2,fazenda:'Fazenda Santa Clara',talhao:'Talhão 01',desc:'Verificar necessidade de nitrogênio. Cultura do milho em fase crítica de demanda.',dias:'5',nivel:'r'},
+    {id:3,fazenda:'Fazenda Boa Vista',talhao:'Talhão 02',desc:'Análise de solo recomendada. Última análise realizada há 8 meses.',dias:'10',nivel:'g'}
+  ]);
+  sd('eventos',[
+    {id:1,tipo:'plantio',local:'São José – T01',data:'2024-05-01',desc:'Plantio de soja'},
+    {id:2,tipo:'adubacao',local:'Santa Clara',data:'2024-05-07',desc:'Adubação cobertura'},
+    {id:3,tipo:'plantio',local:'São José – T02',data:'2024-05-13',desc:'Plantio milho'},
+    {id:4,tipo:'adubacao',local:'Boa Vista',data:'2024-05-14',desc:'Adubação plantio'},
+    {id:5,tipo:'aplicacao',local:'São José – T03',data:'2024-05-20',desc:'Fungicida'},
+    {id:6,tipo:'colheita',local:'São José – T01',data:'2024-05-28',desc:'Colheita soja'},
+    {id:7,tipo:'colheita',local:'São José – T02',data:'2024-05-29',desc:'Colheita milho'}
+  ]);
+}
+
+// =============== AUTH ===============
+function getu(){ return JSON.parse(localStorage.getItem(UK)||'[]'); }
+function putu(a){ localStorage.setItem(UK,JSON.stringify(a)); }
+(function(){
+  let u=getu();
+  if(!u.find(x=>x.user==='joao.silva')){
+    u.push({user:'joao.silva',nome:'João da Silva',email:'joao@rsagro.com',pass:'rsagro123'});
+    putu(u);
+  }
+})();
+
+function tab(t){
+  document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('on',(i===0&&t==='login')||(i===1&&t==='cadastro')));
+  document.getElementById('fl').classList.toggle('on',t==='login');
+  document.getElementById('fc').classList.toggle('on',t==='cadastro');
+}
+
+function login(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value;
+  const found=getu().find(x=>(x.user===u||x.email===u)&&x.pass===p);
+  if(!found){ errmsg('le','Usuário ou senha incorretos.'); return; }
+  enter(found);
+}
+
+function cadastro(){
+  const n=v('cn'),cpf=v('cc'),e=v('ce'),u=v('cu'),t=v('ct'),p=v('cp'),p2=v('cp2');
+  if(!n||!e||!u||!p){ errmsg('ce2','Preencha todos os campos obrigatórios.'); return; }
+  if(p.length<6){ errmsg('ce2','Senha deve ter mínimo 6 caracteres.'); return; }
+  if(p!==p2){ errmsg('ce2','As senhas não coincidem.'); return; }
+  const us=getu();
+  if(us.find(x=>x.user===u)){ errmsg('ce2','Usuário já em uso.'); return; }
+  if(us.find(x=>x.email===e)){ errmsg('ce2','E-mail já cadastrado.'); return; }
+  us.push({user:u,nome:n,email:e,cpf,tel:t,pass:p});
+  putu(us);
+  const ok=document.getElementById('cok');
+  ok.textContent='Conta criada! Entrando...'; ok.style.display='block';
+  document.getElementById('ce2').style.display='none';
+  setTimeout(()=>enter({user:u,nome:n,email:e,pass:p}),1200);
+}
+
+function errmsg(id,m){ const el=document.getElementById(id); el.textContent=m; el.style.display='block'; }
+function v(id){ return document.getElementById(id).value.trim(); }
+
+function enter(user){
+  CU=user.user+'_'; seed();
+  const ini=user.nome.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('sb-nome').textContent=user.nome;
+  document.getElementById('tb-nome').textContent=user.nome;
+  document.getElementById('tb-av').textContent=ini;
+  document.getElementById('ola').textContent='Olá, '+user.nome.split(' ')[0]+'!';
+  document.getElementById('auth').style.display='none';
+  document.getElementById('app').style.display='flex';
+  renderAll();
+}
+
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth').style.display='flex';
+  document.getElementById('lp').value=''; CU=null; tab('login');
+}
+
+// =============== NAVIGATION ===============
+function pg(id,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  document.querySelectorAll('.nv').forEach(n=>n.classList.remove('on'));
+  if(el) el.classList.add('on');
+  else document.querySelectorAll('.nv').forEach(n=>{ if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('on'); });
+  closesb();
+  window.scrollTo(0,0);
+  if(id==='fazendas') rdFaz();
+  if(id==='talhoes') rdTal();
+  if(id==='analises') rdAn();
+  if(id==='rec') rdRec();
+  if(id==='alertas') rdAl();
+  if(id==='relat') rdRl();
+  if(id==='cal') rdFCal();
+}
+
+function opensb(){ document.getElementById('sb').classList.add('open'); document.getElementById('sbov').classList.add('open'); }
+function closesb(){ document.getElementById('sb').classList.remove('open'); document.getElementById('sbov').classList.remove('open'); }
+
+// =============== RENDER ===============
+function renderAll(){
+  rdDashAl(); rdDashTbl(); rdMiniCal(); rdFaz(); rdTal(); rdAn(); rdRec(); rdAl(); rdRl(); rdFCal(); badge();
+}
+
+const fmt=d=>d?d.split('-').reverse().join('/'):'–';
+const nid=a=>a.length?Math.max(...a.map(x=>x.id))+1:1;
+
+function rdDashAl(){
+  const a=ls('alertas')||[];
+  const bm={r:'badge-r',y:'badge-y',g:'badge-g'};
+  const im={r:'🔴',y:'🟡',g:'🟢'};
+  let h=a.slice(0,3).map(x=>`<div class="al-item"><span class="al-bell">${im[x.nivel]||'🔔'}</span><div class="al-info"><div class="al-title">${x.fazenda} – ${x.talhao}</div><div class="al-desc">${x.desc}</div></div><span class="badge ${bm[x.nivel]||'badge-y'}">${x.dias} dias</span></div>`).join('');
+  h+=`<button class="al-more" onclick="pg('alertas',null)">Ver todos os alertas</button>`;
+  document.getElementById('dash-al').innerHTML=h||'<div class="empty"><i class="bi bi-bell-slash"></i><p>Sem alertas</p></div>';
+}
+
+function rdDashTbl(){
+  const a=ls('analises')||[];
+  const p=s=>`<span class="pill ${s==='Analisada'?'pill-a':'pill-p'}">${s}</span>`;
+  document.getElementById('dash-tbl').innerHTML=a.slice(0,4).map(x=>`<tr><td>${x.fazenda}</td><td>${x.talhao}</td><td>${fmt(x.data)}</td><td>${x.ph}</td><td>${x.p}</td><td>${x.k}</td><td>${x.mo}%</td><td>${p(x.status)}</td></tr>`).join('')||`<tr><td colspan="8" style="text-align:center;color:#ccc;padding:24px">Nenhuma análise</td></tr>`;
+}
+
+function rdFaz(){
+  const a=ls('fazendas')||[];
+  const ct=n=>(ls('talhoes')||[]).filter(t=>t.fazenda===n).length;
+  document.getElementById('faz-grid').innerHTML=a.length?a.map(x=>`<div class="cc"><div class="cc-bar"></div><div class="cc-body"><div class="cc-title"><i class="bi bi-building"></i> ${x.nome}</div><div class="cc-meta">📍 ${x.loc}<br>📐 ${x.area} ha &nbsp;|&nbsp; 🌱 ${x.cult}</div></div><div class="cc-foot"><span class="tag">${ct(x.nome)} talhão(ões)</span><button class="del-btn" onclick="delFaz(${x.id})"><i class="bi bi-trash3"></i> Excluir</button></div></div>`).join(''):`<div class="empty"><i class="bi bi-building"></i><p>Nenhuma fazenda cadastrada.<br>Clique em "Adicionar Fazenda".</p></div>`;
+}
+
+function delFaz(id){ if(!confirm('Excluir fazenda?')) return; ss('fazendas',(ls('fazendas')||[]).filter(x=>x.id!==id)); rdFaz(); toast('Fazenda excluída.'); }
+
+function rdTal(){
+  const a=ls('talhoes')||[];
+  document.getElementById('tal-grid').innerHTML=a.length?a.map(x=>`<div class="cc"><div class="cc-bar"></div><div class="cc-body"><div class="cc-title"><i class="bi bi-grid"></i> ${x.nome} – ${x.fazenda.replace('Fazenda ','')}</div><div class="cc-meta">📐 ${x.area} ha &nbsp;|&nbsp; 🌱 ${x.cult}<br>📅 Plantio: ${fmt(x.data)}</div></div><div class="cc-foot"><span class="tag">Ativo</span><button class="del-btn" onclick="delTal(${x.id})"><i class="bi bi-trash3"></i> Excluir</button></div></div>`).join(''):`<div class="empty"><i class="bi bi-grid"></i><p>Nenhum talhão cadastrado.</p></div>`;
+}
+
+function delTal(id){ if(!confirm('Excluir talhão?')) return; ss('talhoes',(ls('talhoes')||[]).filter(x=>x.id!==id)); rdTal(); toast('Talhão excluído.'); }
+
+function rdAn(){
+  const a=ls('analises')||[];
+  const p=s=>`<span class="pill ${s==='Analisada'?'pill-a':'pill-p'}">${s}</span>`;
+  document.getElementById('an-tbl').innerHTML=a.length?a.map(x=>`<tr><td>${x.fazenda}</td><td>${x.talhao}</td><td>${fmt(x.data)}</td><td>${x.ph}</td><td>${x.p}</td><td>${x.k}</td><td>${x.ca||'–'}</td><td>${x.mg||'–'}</td><td>${x.mo}</td><td>${x.v||'–'}</td><td>${p(x.status)}</td><td><button class="del-btn" onclick="delAn(${x.id})"><i class="bi bi-trash3"></i></button></td></tr>`).join(''):`<tr><td colspan="12" style="text-align:center;color:#ccc;padding:28px">Nenhuma análise</td></tr>`;
+}
+
+function delAn(id){ if(!confirm('Excluir análise?')) return; ss('analises',(ls('analises')||[]).filter(x=>x.id!==id)); rdAn(); rdDashTbl(); toast('Análise excluída.'); }
+
+function rdRec(){
+  const a=ls('recs')||[];
+  const bcol={Alta:'#ef4444',Média:'#f59e0b',Normal:'#63A54B'};
+  const pb={Alta:'background:#fde8e8;color:#b91c1c',Média:'background:#fef3c7;color:#d97706',Normal:'background:#d1fae5;color:#065f46'};
+  const ico={Alta:'bi-exclamation-triangle-fill',Média:'bi-exclamation-circle-fill',Normal:'bi-leaf-fill'};
+  document.getElementById('rec-list').innerHTML=a.length?a.map(x=>`
+    <div class="rec" style="border-left:5px solid ${bcol[x.prior]||'#63A54B'}">
+      <div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="width:44px;height:44px;border-radius:50%;background:${bcol[x.prior]||'#63A54B'}22;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="bi ${ico[x.prior]||'bi-leaf-fill'}" style="font-size:20px;color:${bcol[x.prior]||'#63A54B'}"></i>
+        </div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h4 style="font-size:14px;font-weight:700;color:#1B3A2A">${x.fazenda} – ${x.talhao} <span style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;margin-left:6px;${pb[x.prior]||''}">${x.prior}</span></h4>
+            <button class="del-btn" onclick="delRec(${x.id})"><i class="bi bi-trash3"></i></button>
+          </div>
+          <p style="font-size:13px;color:#555;margin:7px 0;line-height:1.5">${x.txt}</p>
+          <div class="rec-meta"><span><strong>Produto:</strong> ${x.prod}</span><span><strong>Dose:</strong> ${x.dose}</span><span><strong>Data:</strong> ${fmt(x.data)}</span></div>
+        </div>
+      </div>
+    </div>`).join(''):`<div class="empty"><i class="bi bi-clipboard2-check-fill" style="font-size:48px;display:block;margin-bottom:12px"></i><p>Nenhuma recomendação cadastrada.</p></div>`;
+}
+
+function delRec(id){ if(!confirm('Excluir recomendação?')) return; ss('recs',(ls('recs')||[]).filter(x=>x.id!==id)); rdRec(); toast('Excluído.'); }
+
+function rdAl(){
+  const a=ls('alertas')||[];
+  badge();
+  const bm={r:'badge-r',y:'badge-y',g:'badge-g'};
+  const im={r:'🔴',y:'🟡',g:'🟢'};
+  document.getElementById('al-list').innerHTML=a.length?a.map(x=>`<div class="al-pg"><span class="al-pg-ico">${im[x.nivel]||'🔔'}</span><div class="al-pg-body"><h4>${x.fazenda} – ${x.talhao}</h4><p>${x.desc}</p></div><div class="al-pg-right"><span class="badge ${bm[x.nivel]||'badge-y'}">${x.dias} dias</span><button class="del-btn" onclick="delAl(${x.id})"><i class="bi bi-trash3"></i> Dispensar</button></div></div>`).join(''):`<div class="empty"><i class="bi bi-bell-slash"></i><p>Nenhum alerta ativo.</p></div>`;
+}
+
+function delAl(id){ if(!confirm('Dispensar alerta?')) return; ss('alertas',(ls('alertas')||[]).filter(x=>x.id!==id)); rdAl(); rdDashAl(); badge(); toast('Alerta dispensado.'); }
+
+function badge(){ const c=(ls('alertas')||[]).length; const b=document.getElementById('nbc'); b.textContent=c; b.style.display=c?'flex':'none'; }
+
+function rdRl(){
+  const data=[
+    {n:'Fazenda São José',c:'Soja 23/24',v:'62,5',u:'sc/ha',tot:'5.312',area:'85',d:'+8,2%',pos:true},
+    {n:'Fazenda Santa Clara',c:'Milho 23/24',v:'128,3',u:'sc/ha',tot:'12.830',area:'100',d:'+12,5%',pos:true},
+    {n:'Fazenda Boa Vista',c:'Algodão 23/24',v:'285,7',u:'@/ha',tot:'57.140',area:'200',d:'-3,1%',pos:false}
+  ];
+  document.getElementById('rl-list').innerHTML=data.map(x=>`<div class="rl"><div class="rl-hd${x.pos?'':' neg'}"><h4>${x.n} – ${x.c}</h4><span>${x.pos?'↑':'↓'} ${x.d} vs safra anterior</span></div><div class="rl-bd"><div class="rl-stats"><div class="rl-st"><div class="rl-sv">${x.v}</div><div class="rl-sl">Produtividade (${x.u})</div></div><div class="rl-st"><div class="rl-sv">${x.tot}</div><div class="rl-sl">Total (${x.u.split('/')[0]})</div></div><div class="rl-st"><div class="rl-sv">${x.area} ha</div><div class="rl-sl">Área colhida</div></div></div></div></div>`).join('');
+}
+
+// =============== CALENDAR ===============
+const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+let mY=2024,mM=4,fY=2024,fM=4;
+const TD={y:2024,m:4,d:15};
+const DC={plantio:'#16a34a',adubacao:'#2563eb',aplicacao:'#d97706',colheita:'#dc2626'};
+const EC={plantio:'ev-p',adubacao:'ev-a',aplicacao:'ev-ap',colheita:'ev-c'};
+
+function gevs(y,m,d){
+  const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  return (ls('eventos')||[]).filter(e=>e.data===k);
+}
+
+function rdMiniCal(){
+  document.getElementById('mlbl').textContent=MN[mM]+' de '+mY;
+  const t=document.getElementById('mt');
+  const days=new Date(mY,mM+1,0).getDate();
+  const first=new Date(mY,mM,1).getDay();
+  let h='<thead><tr>'+['D','S','T','Q','Q','S','S'].map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>';
+  let d=1;
+  for(let r=0;r<6;r++){
+    h+='<tr>';
+    for(let c=0;c<7;c++){
+      if(r===0&&c<first||d>days){ h+='<td class="other"></td>'; continue; }
+      const iT=(mY===TD.y&&mM===TD.m&&d===TD.d);
+      const ev=gevs(mY,mM,d);
+      const dot=ev.length?`<span class="dot" style="background:${DC[ev[0].tipo]||'#999'}"></span>`:'';
+      h+=`<td class="${iT?'today':''}">${d}${dot}</td>`;
+      d++;
+    }
+    h+='</tr>'; if(d>days) break;
+  }
+  h+='</tbody>'; t.innerHTML=h;
+}
+
+function mp(dir){ mM+=dir; if(mM<0){mM=11;mY--;} if(mM>11){mM=0;mY++;} rdMiniCal(); }
+
+function rdFCal(){
+  document.getElementById('flbl').textContent=MN[fM]+' de '+fY;
+  const t=document.getElementById('ft');
+  const days=new Date(fY,fM+1,0).getDate();
+  const first=new Date(fY,fM,1).getDay();
+  const prev=new Date(fY,fM,0).getDate();
+  let h='<thead><tr>'+['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>';
+  let d=1,af=1;
+  for(let r=0;r<6;r++){
+    h+='<tr>';
+    for(let c=0;c<7;c++){
+      if(r===0&&c<first){ h+=`<td class="co"><span class="dn">${prev-(first-1)+c}</span></td>`; }
+      else if(d>days){ h+=`<td class="co"><span class="dn">${af++}</span></td>`; }
+      else {
+        const iT=(fY===TD.y&&fM===TD.m&&d===TD.d);
+        const ev=gevs(fY,fM,d);
+        const eh=ev.map(e=>`<span class="ev ${EC[e.tipo]||'ev-a'}">${e.desc||e.local}</span>`).join('');
+        h+=`<td class="${iT?'ct':''}"><span class="dn">${d}</span>${eh}</td>`;
+        d++;
+      }
+    }
+    h+='</tr>'; if(d>days&&r>=4) break;
+  }
+  h+='</tbody>'; t.innerHTML=h;
+}
+
+function fp(dir){ fM+=dir; if(fM<0){fM=11;fY--;} if(fM>11){fM=0;fY++;} rdFCal(); }
+
+// =============== SAVE FORMS ===============
+function fillSels(ids){
+  const faz=ls('fazendas')||[];
+  ids.forEach(id=>{ const s=document.getElementById(id); if(!s) return; s.innerHTML='<option value="">Selecione...</option>'+faz.map(f=>`<option>${f.nome}</option>`).join(''); });
+}
+
+function openmo(id){ fillSels(['tf','anf','rcf','alf']); document.getElementById(id).classList.add('on'); }
+function closemo(id){ document.getElementById(id).classList.remove('on'); }
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');}));
+
+function svFaz(){
+  const nome=v('fn'),loc=v('fl2'),area=v('fa'),cult=v('fcu');
+  if(!nome){ alert('Informe o nome.'); return; }
+  const a=ls('fazendas')||[];
+  a.push({id:nid(a),nome,loc,area,cult});
+  ss('fazendas',a); closemo('mo-faz'); rdFaz(); toast('Fazenda adicionada!');
+}
+
+function svTal(){
+  const fazenda=v('tf')||document.getElementById('tf').value;
+  const nome=v('tn'),area=v('ta'),cult=v('tc'),data=document.getElementById('td').value;
+  if(!fazenda||!nome){ alert('Informe fazenda e nome.'); return; }
+  const a=ls('talhoes')||[];
+  a.push({id:nid(a),fazenda,nome,area,cult,data});
+  ss('talhoes',a); closemo('mo-tal'); rdTal(); toast('Talhão adicionado!');
+}
+
+function svAn(){
+  const fazenda=document.getElementById('anf').value;
+  const talhao=v('ant'),data=document.getElementById('and').value;
+  const ph=v('anph'),p=v('anp'),k=v('ank'),mo=v('anmo'),ca=v('anca'),mg=v('anmg');
+  if(!fazenda||!talhao||!data||!ph){ alert('Preencha os campos obrigatórios.'); return; }
+  const a=ls('analises')||[];
+  a.unshift({id:nid(a),fazenda,talhao,data,ph,p,k,ca,mg,mo,v:'',status:'Analisada'});
+  ss('analises',a); closemo('mo-an'); rdAn(); rdDashTbl(); toast('Análise registrada!');
+}
+
+function svRec(){
+  const fazenda=document.getElementById('rcf').value,talhao=v('rct');
+  const txt=document.getElementById('rctx').value.trim();
+  const prod=v('rcp'),dose=v('rcd'),prior=document.getElementById('rcpr').value;
+  if(!fazenda||!talhao||!txt){ alert('Preencha os campos.'); return; }
+  const a=ls('recs')||[];
+  a.unshift({id:nid(a),fazenda,talhao,txt,prod,dose,prior,data:new Date().toISOString().split('T')[0]});
+  ss('recs',a); closemo('mo-rec'); rdRec(); toast('Recomendação adicionada!');
+}
+
+function svEv(){
+  const tipo=document.getElementById('evt').value,local=v('evl');
+  const data=document.getElementById('evd').value,desc=v('evdesc');
+  if(!local||!data){ alert('Informe local e data.'); return; }
+  const a=ls('eventos')||[];
+  a.push({id:nid(a),tipo,local,data,desc});
+  ss('eventos',a); closemo('mo-ev'); rdFCal(); rdMiniCal(); toast('Evento adicionado!');
+}
+
+function svAl(){
+  const fazenda=document.getElementById('alf').value,talhao=v('alt');
+  const desc=document.getElementById('aldc').value.trim();
+  const dias=v('alda'),nivel=document.getElementById('aln').value;
+  if(!fazenda||!talhao||!desc||!dias){ alert('Preencha todos os campos.'); return; }
+  const a=ls('alertas')||[];
+  a.unshift({id:nid(a),fazenda,talhao,desc,dias,nivel});
+  ss('alertas',a); closemo('mo-al'); rdAl(); rdDashAl(); badge(); toast('Alerta criado!');
+}
+
+// =============== TOAST ===============
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2800); }
+
+// init
+rdMiniCal();
+</script>
+</body>
+</html>
